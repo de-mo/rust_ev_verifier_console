@@ -1,0 +1,19 @@
+[package]
+name = "rust_verifier_console"
+authors = ["Denis Morel"]
+edition = "2021"
+rust-version = "1.81"
+repository = "https://github.com/de-mo/rust_verifier_console"
+version = "0.0.1"
+license = "Apache-2.0"
+readme = "README.md"
+
+[dependencies]
+#rust_ev_crypto_primitives = "0.5"
+rust_verifier = { path = "../rust_verifier" }
+anyhow = "1"
+log = "0.4"
+lazy_static = "1"
+log4rs = "1"
+structopt = "0.3"
+dotenvy = "0.15"
