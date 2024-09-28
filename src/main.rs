@@ -97,8 +97,9 @@ fn execute_command(password: &str) -> anyhow::Result<()> {
 
 fn main() -> anyhow::Result<()> {
     let _ = dotenvy::dotenv().map_err(|e| {
-        error!("{}", e);
-        anyhow!(e)
+        let error = anyhow!(format!("Error reading .env file: {e}"));
+        error!("{}", error);
+        error
     })?;
     let password = dotenvy::var("VERIFIER_DATASET_PASSWORD").map_err(|e| {
         error!(
