@@ -1,17 +1,16 @@
 use anyhow::ensure;
-use log::info;
 use rust_verifier::{dataset::DatasetMetadata, Config as VerifierConfig};
 use std::path::Path;
+use tracing::{info, instrument};
 
 /// Execute the verifications, starting the runner
+#[instrument(skip(password, config))]
 pub fn execute_extract(
     input: &Path,
     password: &str,
     dataset_type_str: &str,
     config: &VerifierConfig,
 ) -> anyhow::Result<()> {
-    println!("start");
-    println!("--{}--", dataset_type_str);
     ensure!(
         ["context", "setup", "tally"].contains(&dataset_type_str),
         "not correct dataset type: only context, setup or tally allowed"

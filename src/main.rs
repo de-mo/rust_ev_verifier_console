@@ -6,17 +6,17 @@
 //! ```
 
 mod extract;
-mod logger;
+mod subscriber;
 mod verifications;
 
 use anyhow::anyhow;
 use extract::execute_extract;
 use lazy_static::lazy_static;
-use log::{error, LevelFilter};
-use logger::init_logger;
 use rust_verifier::{verification::VerificationPeriod, Config as VerifierConfig};
 use std::path::PathBuf;
 use structopt::StructOpt;
+use subscriber::init_subscriber;
+use tracing::{error, instrument};
 use verifications::execute_verifications;
 
 lazy_static! {
@@ -80,6 +80,7 @@ pub struct VerifiyCommand {
 /// # return
 /// * Nothing if the execution runs correctly
 /// * [anyhow::Result] with the related error by a problem
+#[instrument(skip(password))]
 fn execute_command(password: &str) -> anyhow::Result<()> {
     match VerifiyCommand::from_args().sub {
         SubCommands::Setup(c) => {
@@ -98,9 +99,9 @@ fn execute_command(password: &str) -> anyhow::Result<()> {
 fn main() -> anyhow::Result<()> {
     let _ = dotenvy::dotenv().map_err(|e| {
         let error = anyhow!(format!("Error reading .env file: {e}"));
-        error!("{}", error);
         error
     })?;
+    let _guards = init_subscriber(&CONFIG);
     let password = dotenvy::var("VERIFIER_DATASET_PASSWORD").map_err(|e| {
         error!(
             "Password (VERIFIER_DATASET_PASSWORD) not found in .env {}",
@@ -108,7 +109,6 @@ fn main() -> anyhow::Result<()> {
         );
         anyhow!(e)
     })?;
-    init_logger(&CONFIG, LevelFilter::Debug, true);
     if let Err(e) = execute_command(&password) {
         error!("{}", e)
     }

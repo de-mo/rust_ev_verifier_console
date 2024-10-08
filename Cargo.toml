@@ -12,8 +12,9 @@ readme = "README.md"
 #rust_ev_crypto_primitives = "0.5"
 rust_verifier = { path = "../rust_verifier" }
 anyhow = "1"
-log = "0.4"
 lazy_static = "1"
-log4rs = "1"
 structopt = "0.3"
 dotenvy = "0.15"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-appender = "0.2"

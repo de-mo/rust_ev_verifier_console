@@ -1,5 +1,4 @@
 use anyhow::Context;
-use log::info;
 use rust_verifier::{
     application_runner::{
         no_action_after_fn, no_action_before_fn, ExtractDataSetResults, RunParallel, Runner,
@@ -7,10 +6,12 @@ use rust_verifier::{
     verification::{VerificationMetaDataList, VerificationPeriod},
     Config as VerifierConfig,
 };
+use tracing::{info, instrument};
 
 use crate::VerifierSubCommand;
 
 /// Execute the verifications, starting the runner
+#[instrument(skip(password, config))]
 pub fn execute_verifications(
     period: &VerificationPeriod,
     sub_command: &VerifierSubCommand,
