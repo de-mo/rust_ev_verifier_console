@@ -34,11 +34,16 @@ pub fn execute_verifications(
     info!("extraction finished");
     info!("Start Verifier for {}", period.as_ref());
     let metadata = VerificationMetaDataList::load(config.get_verification_list_str()).unwrap();
+    let exclusion = sub_command
+        .exclude
+        .iter()
+        .map(|s| s.as_str())
+        .collect::<Vec<_>>();
     let mut runner = Runner::new(
         extracted.location(),
         period,
         &metadata,
-        &sub_command.exclude,
+        exclusion.as_slice(),
         RunParallel,
         config,
         no_action_before_fn,
