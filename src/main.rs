@@ -2,7 +2,7 @@
 //!
 //! For help:
 //! ```shell
-//! rust_verifier_console --help
+//! rust_ev_verifier_lib_console --help
 //! ```
 
 mod extract;
@@ -12,7 +12,7 @@ mod verifications;
 use anyhow::anyhow;
 use extract::execute_extract;
 use lazy_static::lazy_static;
-use rust_verifier::{verification::VerificationPeriod, Config as VerifierConfig};
+use rust_ev_verifier_lib::{verification::VerificationPeriod, Config as VerifierConfig};
 use std::path::PathBuf;
 use structopt::StructOpt;
 use subscriber::init_subscriber;

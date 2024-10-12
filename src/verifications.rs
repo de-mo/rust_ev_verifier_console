@@ -1,5 +1,5 @@
 use anyhow::Context;
-use rust_verifier::{
+use rust_ev_verifier_lib::{
     application_runner::{
         no_action_after_fn, no_action_before_fn, ExtractDataSetResults, RunParallel, Runner,
     },

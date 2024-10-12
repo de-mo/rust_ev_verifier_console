@@ -9,8 +9,8 @@ license = "Apache-2.0"
 readme = "README.md"
 
 [dependencies]
-#rust_ev_crypto_primitives = "0.5"
-rust_verifier = { path = "../rust_verifier" }
+#rust_ev_verifier_lib = "0.1"
+rust_ev_verifier_lib = { path = "../rust_ev_verifier_lib" }
 anyhow = "1"
 lazy_static = "1"
 structopt = "0.3"
