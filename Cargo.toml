@@ -1,10 +1,10 @@
 [package]
-name = "rust_verifier_console"
+name = "rust_ev_verifier_console"
 authors = ["Denis Morel"]
 edition = "2021"
 rust-version = "1.81"
-repository = "https://github.com/de-mo/rust_verifier_console"
-version = "0.0.1"
+repository = "https://github.com/de-mo/rust_ev_verifier_console"
+version = "0.1.0"
 license = "Apache-2.0"
 readme = "README.md"
 

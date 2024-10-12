@@ -962,6 +962,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "rust_ev_verifier_console"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "dotenvy",
+ "lazy_static",
+ "rust_verifier",
+ "structopt",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "rust_verifier"
 version = "0.1.0"
 dependencies = [
@@ -982,20 +996,6 @@ dependencies = [
  "thiserror",
  "tracing",
  "zip-extract",
-]
-
-[[package]]
-name = "rust_verifier_console"
-version = "0.0.1"
-dependencies = [
- "anyhow",
- "dotenvy",
- "lazy_static",
- "rust_verifier",
- "structopt",
- "tracing",
- "tracing-appender",
- "tracing-subscriber",
 ]
 
 [[package]]
