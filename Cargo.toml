@@ -1,5 +1,6 @@
 [package]
 name = "rust_ev_verifier_console"
+description = "Console application for the E-Voting system of Swiss Post."
 authors = ["Denis Morel"]
 edition = "2021"
 rust-version = "1.81"
@@ -7,9 +8,11 @@ repository = "https://github.com/de-mo/rust_ev_verifier_console"
 version = "0.1.0"
 license = "Apache-2.0"
 readme = "README.md"
+categories = ["cryptography", "mathematics"]
+keywords = ["math", "e-voting", "crypto"]
 
 [dependencies]
-#rust_ev_verifier_lib = "0.1"
+#rust_ev_verifier_lib = "0.6"
 rust_ev_verifier_lib = { path = "../rust_ev_verifier_lib" }
 anyhow = "1"
 lazy_static = "1"
