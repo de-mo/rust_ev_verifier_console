@@ -16,7 +16,7 @@ use rust_verifier::{verification::VerificationPeriod, Config as VerifierConfig};
 use std::path::PathBuf;
 use structopt::StructOpt;
 use subscriber::init_subscriber;
-use tracing::{error, instrument};
+use tracing::{error, info, instrument};
 use verifications::execute_verifications;
 
 lazy_static! {
@@ -102,6 +102,12 @@ fn main() -> anyhow::Result<()> {
         error
     })?;
     let _guards = init_subscriber(&CONFIG);
+
+    info!(
+        "Starting the verifier Console (Version: {})",
+        env!("CARGO_PKG_VERSION")
+    );
+
     let password = dotenvy::var("VERIFIER_DATASET_PASSWORD").map_err(|e| {
         error!(
             "Password (VERIFIER_DATASET_PASSWORD) not found in .env {}",
