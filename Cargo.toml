@@ -12,8 +12,8 @@ categories = ["cryptography", "mathematics"]
 keywords = ["math", "e-voting", "crypto"]
 
 [dependencies]
-#rust_ev_verifier_lib = "0.6"
-rust_ev_verifier_lib = { path = "../rust_ev_verifier_lib" }
+rust_ev_verifier_lib = "0.2"
+#rust_ev_verifier_lib = { path = "../rust_ev_verifier_lib" }
 anyhow = "1"
 lazy_static = "1"
 structopt = "0.3"
