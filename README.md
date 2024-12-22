@@ -10,6 +10,11 @@ The build on Windows must be done with MSYS2 (see [Crypto Primitives](https://gi
 
 ## Usage
 
+Create a file `.env` using the delivered `env.example`:
+- Modify the password (`VERIFIER_DATASET_PASSWORD`) according to the used password of the zip files
+
+Create a directory `log` 
+
 Copy the direct trust certificate for  the verification on the directors `./direct-trust`.
 
 Launch `rust_ev_verifier_console -h` to see the help
