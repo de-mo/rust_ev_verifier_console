@@ -47,7 +47,6 @@ pub struct VerifierSubCommand {
     pub tally_zip: Option<PathBuf>,
 }
 
-/// Enum with the possible subcommands
 #[derive(Debug, PartialEq, StructOpt)]
 #[structopt()]
 pub enum SubCommands {
@@ -109,6 +108,13 @@ fn main() -> anyhow::Result<()> {
         let error = anyhow!(format!("Error reading .env file: {e}"));
         error
     })?;
+
+    let log_file_path = CONFIG.log_file_path();
+    let log_dir_path = log_file_path.parent().unwrap();
+    if !log_dir_path.exists() {
+        std::fs::create_dir_all(log_dir_path)?;
+    }
+
     let _guards = init_subscriber(&CONFIG);
 
     info!(
