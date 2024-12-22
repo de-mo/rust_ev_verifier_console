@@ -1,14 +1,17 @@
+use crate::VerifierSubCommand;
 use anyhow::Context;
 use rust_ev_verifier_lib::{
     application_runner::{
         no_action_after_fn, no_action_before_fn, ExtractDataSetResults, RunParallel, Runner,
     },
-    verification::{VerificationMetaDataList, VerificationPeriod},
+    file_structure::VerificationDirectory,
+    verification::{
+        ManualVerificationInformationTrait, ManualVerifications, VerificationMetaDataList,
+        VerificationPeriod,
+    },
     Config as VerifierConfig,
 };
-use tracing::{info, instrument};
-
-use crate::VerifierSubCommand;
+use tracing::{error, info, instrument};
 
 /// Execute the verifications, starting the runner
 #[instrument(skip(password, config))]
@@ -53,6 +56,14 @@ pub fn execute_verifications(
     runner
         .run_all(&metadata)
         .context("error running the tests")?;
+    match ManualVerifications::new(
+        *period,
+        &VerificationDirectory::new(period, extracted.location()),
+        config,
+    ) {
+        Ok(manual_verifications) => info!("{}", manual_verifications.to_string()),
+        Err(e) => error!("Error generating manual verfications: {}", e),
+    };
     info!("Verifier finished");
     Ok(())
 }
