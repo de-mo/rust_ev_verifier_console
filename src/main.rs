@@ -33,12 +33,17 @@ pub struct VerifierSubCommand {
     pub exclude: Vec<String>,
 
     #[structopt(long, parse(from_os_str))]
+    /// Path to the context zip file.
     pub context_zip: PathBuf,
 
     #[structopt(long, parse(from_os_str))]
+    /// Path to the setup zip file.
+    /// Mandatory for setup
     pub setup_zip: Option<PathBuf>,
 
     #[structopt(long, parse(from_os_str))]
+    /// Path to the tally zip file.
+    /// Mandatory for tally
     pub tally_zip: Option<PathBuf>,
 }
 
@@ -58,8 +63,11 @@ pub enum SubCommands {
     /// Extraction of the zip
     Extract {
         #[structopt(short, long, parse(from_os_str))]
+        /// The path to the zip file
         input: PathBuf,
         #[structopt(short, long)]
+        /// The type of the dataset.
+        /// Only values "context", "setup", "tally" are valid
         dataset_type: String,
     },
 }
