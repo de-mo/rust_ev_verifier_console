@@ -971,7 +971,7 @@ dependencies = [
 
 [[package]]
 name = "rust_ev_verifier_console"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "anyhow",
  "dotenvy",
