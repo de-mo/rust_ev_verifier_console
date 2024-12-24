@@ -5,14 +5,14 @@ authors = ["Denis Morel"]
 edition = "2021"
 rust-version = "1.81"
 repository = "https://github.com/de-mo/rust_ev_verifier_console"
-version = "0.2.0"
+version = "0.2.1"
 license = "Apache-2.0"
 readme = "README.md"
 categories = ["cryptography", "mathematics"]
 keywords = ["math", "e-voting", "crypto"]
 
 [dependencies]
-rust_ev_verifier_lib = "0.2"
+rust_ev_verifier_lib = "0.2.1"
 #rust_ev_verifier_lib = { path = "../rust_ev_verifier_lib" }
 anyhow = "1"
 lazy_static = "1"
