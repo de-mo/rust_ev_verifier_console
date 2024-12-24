@@ -958,9 +958,9 @@ dependencies = [
 
 [[package]]
 name = "rust_ev_system_library"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "52b083597833d3d29bea4c8f93f5bb3b7ad79399d0add91372e22bf887442201"
+checksum = "14c719ccc0c72bfecbd6a6b0461b98becdc75ea585b4c5d1070ff5bd20632b5a"
 dependencies = [
  "chrono",
  "rayon",
@@ -985,9 +985,9 @@ dependencies = [
 
 [[package]]
 name = "rust_ev_verifier_lib"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75cb83b5ce4ec73635dd54ed7ae8b9d7fcdb8844cad8c626e155fcc96b6d4655"
+checksum = "7f2eb1c5a6c1628e061fb0ca1e18bfd2e260083b9a41a60e932faabc7f83385f"
 dependencies = [
  "chrono",
  "data-encoding",
