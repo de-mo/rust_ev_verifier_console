@@ -4,6 +4,8 @@
 
 This crate is the console application for the E-Voting system of Swiss Post.
 
+On Linux, the application uses the library gmpmee. It is actually not the case on Windows.
+
 ## Build
 
 The build on Windows must be done with MSYS2 (see [Crypto Primitives](https://github.com/de-mo/rust_ev_crypto_primitives) for details)
