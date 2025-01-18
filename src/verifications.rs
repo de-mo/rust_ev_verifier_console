@@ -84,8 +84,8 @@ pub fn execute_verifications(
                 verifs_res_mut.insert(
                     verif_information.id.clone(),
                     (
-                        verif_information.errors.len() as u8,
-                        verif_information.failures.len() as u8,
+                        verif_information.errors.clone(),
+                        verif_information.failures.clone(),
                     ),
                 );
             }
