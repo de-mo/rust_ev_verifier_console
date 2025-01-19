@@ -1144,6 +1144,7 @@ version = "0.2.2"
 dependencies = [
  "chrono",
  "data-encoding",
+ "dotenvy",
  "enum-kinds",
  "glob",
  "lazy_static",

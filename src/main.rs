@@ -12,7 +12,9 @@ mod verifications;
 use anyhow::anyhow;
 use extract::execute_extract;
 use lazy_static::lazy_static;
-use rust_ev_verifier_lib::{verification::VerificationPeriod, Config as VerifierConfig};
+use rust_ev_verifier_lib::{
+    verification::VerificationPeriod, VerifierConfig, ENV_VERIFIER_DATASET_PASSWORD,
+};
 use std::path::PathBuf;
 use structopt::StructOpt;
 use subscriber::init_subscriber;
@@ -122,11 +124,8 @@ fn main() -> anyhow::Result<()> {
         env!("CARGO_PKG_VERSION")
     );
 
-    let password = dotenvy::var("VERIFIER_DATASET_PASSWORD").map_err(|e| {
-        error!(
-            "Password (VERIFIER_DATASET_PASSWORD) not found in .env {}",
-            e
-        );
+    let password = CONFIG.decrypt_password().map_err(|e| {
+        error!("Error reading password: {}", e);
         anyhow!(e)
     })?;
     if let Err(e) = execute_command(&password) {

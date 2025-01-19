@@ -1,4 +1,4 @@
-use rust_ev_verifier_lib::Config as VerifierConfig;
+use rust_ev_verifier_lib::VerifierConfig;
 use std::fs::File;
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_subscriber::{fmt::format::FmtSpan, prelude::*, EnvFilter, Layer};

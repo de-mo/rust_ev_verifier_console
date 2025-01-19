@@ -13,7 +13,7 @@ use rust_ev_verifier_lib::{
     verification::{
         ManualVerifications, VerificationMetaDataList, VerificationPeriod, VerificationStatus,
     },
-    Config as VerifierConfig,
+    VerifierConfig,
 };
 use tracing::{info, instrument, trace};
 
@@ -70,14 +70,11 @@ pub fn execute_verifications(
         move |verif_information| {
             trace!("Start after verification for {}", &verif_information.id);
             let mut verif_not_finished_mut = verifications_not_finished_cloned.write().unwrap();
-            match verif_not_finished_mut
+            if let Some(pos) = verif_not_finished_mut
                 .iter()
                 .position(|id| id == &verif_information.id)
             {
-                Some(pos) => {
-                    let _ = verif_not_finished_mut.remove(pos);
-                }
-                None => {}
+                let _ = verif_not_finished_mut.remove(pos);
             }
             if verif_information.status != VerificationStatus::FinishedSuccessfully {
                 let mut verifs_res_mut = verifications_with_errors_and_failures.write().unwrap();
@@ -94,7 +91,7 @@ pub fn execute_verifications(
         move |run_info| {
             trace!("After running start");
             let mut r_info_mut = runner_information.write().unwrap();
-            r_info_mut.start_time = run_info.start_time.clone();
+            r_info_mut.start_time = run_info.start_time;
             r_info_mut.duration = run_info.duration;
             trace!("After running end");
         },
@@ -119,6 +116,7 @@ pub fn execute_verifications(
     let run_info_read = runner_information_final.read().unwrap();
     let report = ReportData::new(
         verif_directory.path(),
+        config,
         period,
         &manual_verif,
         &extracted,
