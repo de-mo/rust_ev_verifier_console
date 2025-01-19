@@ -12,9 +12,7 @@ mod verifications;
 use anyhow::anyhow;
 use extract::execute_extract;
 use lazy_static::lazy_static;
-use rust_ev_verifier_lib::{
-    verification::VerificationPeriod, VerifierConfig, ENV_VERIFIER_DATASET_PASSWORD,
-};
+use rust_ev_verifier_lib::{verification::VerificationPeriod, VerifierConfig};
 use std::path::PathBuf;
 use structopt::StructOpt;
 use subscriber::init_subscriber;
