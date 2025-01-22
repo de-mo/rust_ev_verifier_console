@@ -1,18 +1,14 @@
-use std::{
-    collections::HashMap,
-    sync::{Arc, RwLock},
-};
+use std::sync::{Arc, RwLock};
 
 use crate::VerifierSubCommand;
 use anyhow::Context;
 use rust_ev_verifier_lib::{
     application_runner::{
-        report::ReportData, ExtractDataSetResults, RunParallel, Runner, RunnerInformation,
+        report::ReportData, run_information::RunInformation, ExtractDataSetResults, RunParallel,
+        Runner,
     },
     file_structure::VerificationDirectoryTrait,
-    verification::{
-        ManualVerifications, VerificationMetaDataList, VerificationPeriod, VerificationStatus,
-    },
+    verification::{ManualVerifications, VerificationMetaDataList, VerificationPeriod},
     VerifierConfig,
 };
 use tracing::{info, instrument, trace};
@@ -46,14 +42,15 @@ pub fn execute_verifications(
         .iter()
         .map(|s| s.to_string())
         .collect::<Vec<_>>();
-    let verifications_not_finished = Arc::new(RwLock::new(vec![]));
-    let verifications_not_finished_cloned = verifications_not_finished.clone();
-    let verifications_not_finished_final = verifications_not_finished.clone();
-    let verifications_with_errors_and_failures = Arc::new(RwLock::new(HashMap::new()));
-    let verifications_with_errors_and_failures_final =
-        verifications_with_errors_and_failures.clone();
-    let runner_information = Arc::new(RwLock::new(RunnerInformation::default()));
-    let runner_information_final = runner_information.clone();
+    let mut run_information = RunInformation::new(config);
+    run_information
+        .prepare_data_for_running(*period, &metadata, &exclusion, &extracted)
+        .context("Error preparing data for running")?;
+    let run_information_lock = Arc::new(RwLock::new(run_information));
+    let run_information_lock_before_run = run_information_lock.clone();
+    let run_information_lock_after_run = run_information_lock.clone();
+    let run_information_lock_before_verif = run_information_lock.clone();
+    let run_information_lock_after_verif = run_information_lock.clone();
     let mut runner = Runner::new(
         extracted.location(),
         period,
@@ -61,39 +58,29 @@ pub fn execute_verifications(
         exclusion.as_slice(),
         RunParallel,
         config,
+        move |start_time| {
+            trace!("Before running start");
+            let mut r_info_mut = run_information_lock_before_run.write().unwrap();
+            r_info_mut.start_running(&start_time);
+            trace!("After running start");
+        },
         move |id| {
             trace!("Start before verification for {}", id);
-            let mut verif_not_finished_mut = verifications_not_finished.write().unwrap();
-            verif_not_finished_mut.push(id.to_string());
+            let mut r_info_mut = run_information_lock_before_verif.write().unwrap();
+            r_info_mut.start_verification(id);
             trace!("End before verification for {}", id);
         },
         move |verif_information| {
             trace!("Start after verification for {}", &verif_information.id);
-            let mut verif_not_finished_mut = verifications_not_finished_cloned.write().unwrap();
-            if let Some(pos) = verif_not_finished_mut
-                .iter()
-                .position(|id| id == &verif_information.id)
-            {
-                let _ = verif_not_finished_mut.remove(pos);
-            }
-            if verif_information.status != VerificationStatus::FinishedSuccessfully {
-                let mut verifs_res_mut = verifications_with_errors_and_failures.write().unwrap();
-                verifs_res_mut.insert(
-                    verif_information.id.clone(),
-                    (
-                        verif_information.errors.clone(),
-                        verif_information.failures.clone(),
-                    ),
-                );
-            }
+            let mut r_info_mut = run_information_lock_after_verif.write().unwrap();
+            r_info_mut.finish_verification(&verif_information);
             trace!("End before verification for {}", &verif_information.id);
         },
         move |run_info| {
-            trace!("After running start");
-            let mut r_info_mut = runner_information.write().unwrap();
-            r_info_mut.start_time = run_info.start_time;
-            r_info_mut.duration = run_info.duration;
-            trace!("After running end");
+            trace!("Before running finished");
+            let mut r_info_mut = run_information_lock_after_run.write().unwrap();
+            r_info_mut.finish_runner(&run_info);
+            trace!("After running finished");
         },
     )
     .context("Error creating the runner")?;
@@ -105,22 +92,29 @@ pub fn execute_verifications(
         *period,
         &verif_directory,
         config,
-        verifications_not_finished_final.read().unwrap().clone(),
-        verifications_with_errors_and_failures_final
+        run_information_lock
             .read()
             .unwrap()
+            .verifications_running()
+            .iter()
+            .map(|id| id.to_string())
+            .collect(),
+        run_information_lock
+            .read()
+            .unwrap()
+            .verifications_with_errors_and_failures()
             .clone(),
         exclusion,
     )
     .context("Error generating manual verfications")?;
-    let run_info_read = runner_information_final.read().unwrap();
+    let run_info_read = run_information_lock.read().unwrap();
     let report = ReportData::new(
         verif_directory.path(),
         config,
         period,
         &manual_verif,
         &extracted,
-        &run_info_read,
+        run_info_read.runner_information(),
     );
     info!("Report: \n{}", report.to_string());
     info!("Verifier finished");
