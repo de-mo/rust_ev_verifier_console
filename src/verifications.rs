@@ -7,8 +7,7 @@ use rust_ev_verifier_lib::{
         report::ReportData, run_information::RunInformation, ExtractDataSetResults, RunParallel,
         Runner,
     },
-    file_structure::VerificationDirectoryTrait,
-    verification::{ManualVerifications, VerificationMetaDataList, VerificationPeriod},
+    verification::{VerificationMetaDataList, VerificationPeriod},
     VerifierConfig,
 };
 use tracing::{info, instrument, trace};
@@ -88,34 +87,8 @@ pub fn execute_verifications(
     runner
         .run_all(&metadata)
         .context("error running the tests")?;
-    let manual_verif = ManualVerifications::new(
-        *period,
-        &verif_directory,
-        config,
-        run_information_lock
-            .read()
-            .unwrap()
-            .verifications_running()
-            .iter()
-            .map(|id| id.to_string())
-            .collect(),
-        run_information_lock
-            .read()
-            .unwrap()
-            .verifications_with_errors_and_failures()
-            .clone(),
-        exclusion,
-    )
-    .context("Error generating manual verfications")?;
     let run_info_read = run_information_lock.read().unwrap();
-    let report = ReportData::new(
-        verif_directory.path(),
-        config,
-        period,
-        &manual_verif,
-        &extracted,
-        run_info_read.runner_information(),
-    );
+    let report = ReportData::new(&run_info_read);
     info!("Report: \n{}", report.to_string());
     info!("Verifier finished");
     Ok(())
