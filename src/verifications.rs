@@ -2,11 +2,12 @@ use std::sync::{Arc, RwLock};
 
 use crate::VerifierSubCommand;
 use anyhow::Context;
+use rust_ev_verifier_application_lib::{
+    report::{ReportConfig, ReportData},
+    run_information::RunInformation,
+    ExtractDataSetResults, RunParallel, Runner,
+};
 use rust_ev_verifier_lib::{
-    application_runner::{
-        report::ReportData, run_information::RunInformation, ExtractDataSetResults, RunParallel,
-        Runner,
-    },
     verification::{VerificationMetaDataList, VerificationPeriod},
     VerifierConfig,
 };
@@ -83,13 +84,18 @@ pub fn execute_verifications(
         },
     )
     .context("Error creating the runner")?;
-    let verif_directory = runner.verification_directory().clone();
     runner
         .run_all(&metadata)
         .context("error running the tests")?;
     let run_info_read = run_information_lock.read().unwrap();
-    let report = ReportData::new(&run_info_read);
-    info!("Report: \n{}", report.to_string());
+    let _ = ReportData::new(
+        ReportConfig::builder()
+            .tab_size(config.txt_report_tab_size())
+            .fromat_date(config.report_format_date().to_string())
+            .output_log(true)
+            .build(),
+        &run_info_read,
+    );
     info!("Verifier finished");
     Ok(())
 }
