@@ -4,8 +4,7 @@ use crate::VerifierSubCommand;
 use anyhow::Context;
 use rust_ev_verifier_application_lib::{
     report::{ReportConfig, ReportData},
-    run_information::RunInformation,
-    ExtractDataSetResults, RunParallel, Runner,
+    ExtractDataSetResults, RunInformation, RunParallel, Runner,
 };
 use rust_ev_verifier_lib::{
     verification::{VerificationMetaDataList, VerificationPeriod},
@@ -44,8 +43,9 @@ pub fn execute_verifications(
         .collect::<Vec<_>>();
     let mut run_information = RunInformation::new(config);
     run_information
-        .prepare_data_for_running(*period, &metadata, &exclusion, &extracted)
+        .prepare_data_for_start(*period, &metadata, &exclusion)
         .context("Error preparing data for running")?;
+    run_information.add_extracted_information(&extracted);
     let run_information_lock = Arc::new(RwLock::new(run_information));
     let run_information_lock_before_run = run_information_lock.clone();
     let run_information_lock_after_run = run_information_lock.clone();
