@@ -1,5 +1,5 @@
 use anyhow::ensure;
-use rust_ev_verifier_lib::{dataset::DatasetMetadata, Config as VerifierConfig};
+use rust_ev_verifier_lib::{dataset::DatasetMetadata, VerifierConfig};
 use std::path::Path;
 use tracing::{info, instrument};
 
