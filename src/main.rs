@@ -12,7 +12,7 @@ mod verifications;
 use anyhow::anyhow;
 use extract::execute_extract;
 use lazy_static::lazy_static;
-use rust_ev_verifier_lib::{verification::VerificationPeriod, VerifierConfig};
+use rust_ev_verifier_lib::{VerifierConfig, verification::VerificationPeriod};
 use std::path::PathBuf;
 use structopt::StructOpt;
 use subscriber::init_subscriber;
@@ -35,11 +35,6 @@ pub struct VerifierSubCommand {
     #[structopt(long, parse(from_os_str))]
     /// Path to the context zip file.
     pub context_zip: PathBuf,
-
-    #[structopt(long, parse(from_os_str))]
-    /// Path to the setup zip file.
-    /// Mandatory for setup
-    pub setup_zip: Option<PathBuf>,
 
     #[structopt(long, parse(from_os_str))]
     /// Path to the tally zip file.

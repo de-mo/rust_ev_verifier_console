@@ -3,12 +3,12 @@ use std::sync::{Arc, RwLock};
 use crate::VerifierSubCommand;
 use anyhow::Context;
 use rust_ev_verifier_application_lib::{
-    report::{ReportConfig, ReportData},
     ExtractDataSetResults, RunInformation, RunParallel, Runner,
+    report::{ReportConfig, ReportData},
 };
 use rust_ev_verifier_lib::{
-    verification::{VerificationMetaDataList, VerificationPeriod},
     VerifierConfig,
+    verification::{VerificationMetaDataList, VerificationPeriod},
 };
 use tracing::{info, instrument, trace};
 
@@ -21,13 +21,11 @@ pub fn execute_verifications(
     config: &'static VerifierConfig,
 ) -> anyhow::Result<()> {
     let context_zip_file = &sub_command.context_zip;
-    let setup_zip_file = sub_command.setup_zip.as_deref();
     let tally_zip_file = sub_command.tally_zip.as_deref();
     info!("Start extraction");
     let extracted = ExtractDataSetResults::extract_datasets(
         *period,
         context_zip_file,
-        setup_zip_file,
         tally_zip_file,
         password,
         config,
