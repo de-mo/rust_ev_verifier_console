@@ -122,7 +122,7 @@ fn main() -> anyhow::Result<()> {
         anyhow!(e)
     })?;
     if let Err(e) = execute_command(&password) {
-        error!("{}", e)
+        error!("{:?}", e)
     }
     Ok(())
 }

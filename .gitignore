@@ -2,3 +2,5 @@
 .env
 /data
 /log
+/temp
+/direct-trust
