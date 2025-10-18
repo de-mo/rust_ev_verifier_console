@@ -1,15 +1,29 @@
-use std::sync::{Arc, RwLock};
+// Copyright © 2025 Denis Morel
+//
+// This program is free software: you can redistribute it and/or modify it under
+// the terms of the GNU General Public License as published by the Free
+// Software Foundation, either version 3 of the License, or (at your option) any
+// later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+// details.
+//
+// You should have received a copy of the GNU General Public License and
+// a copy of the GNU General Public License along with this program. If not, see
+// <https://www.gnu.org/licenses/>.
 
-use crate::VerifierSubCommand;
+use crate::{VerifierSubCommand, report::generate_report};
 use anyhow::Context;
 use rust_ev_verifier_application_lib::{
     ExtractDataSetResults, RunInformation, RunParallel, Runner,
-    report::{ReportConfig, ReportData},
 };
 use rust_ev_verifier_lib::{
     VerifierConfig,
     verification::{VerificationMetaDataList, VerificationPeriod},
 };
+use std::sync::{Arc, RwLock};
 use tracing::{info, instrument, trace};
 
 /// Execute the verifications, starting the runner
@@ -85,15 +99,10 @@ pub fn execute_verifications(
     runner
         .run_all(&metadata)
         .context("error running the tests")?;
-    let run_info_read = run_information_lock.read().unwrap();
-    let _ = ReportData::new(
-        ReportConfig::builder()
-            .tab_size(config.txt_report_tab_size())
-            .fromat_date(config.report_format_date().to_string())
-            .output_log(true)
-            .build(),
-        &run_info_read,
-    );
+    info!("All verifications finished");
+
+    let run_info = run_information_lock.read().unwrap();
+    generate_report(&run_info, config).context("Error generating the reports")?;
     info!("Verifier finished");
     Ok(())
 }
