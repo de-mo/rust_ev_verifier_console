@@ -12,6 +12,8 @@ The build on Windows must be done with MSYS2 (see [Crypto Primitives](https://gi
 
 ## Installation
 
+Openssl must be installed on the system.
+
 Create a file `.env` and configure it according to the following table
 
 | Variable                  | Description                                            | Required | default |
@@ -40,9 +42,24 @@ Copy the direct trust certificate for  the verification on the specified (in `.e
 
 Launch `rust_ev_verifier_console -h` to see the help
 
+Launch the setup verification with the command:
+```bash
+rust_ev_verifier_console setup --context-zip <path_to_dataset>
+```
+
+Launch the tally verification with the command:
+```bash
+rust_ev_verifier_console tally --context-zip <path_to_dataset> --tally-zip <path_to_dataset>
+```
+
+If an error occurs during the generation of the report (e.g. browser not found for pdf report), the verification is not impacted and considered as successful. The application generates a json file with the report information in the `report` directory. You can adapt the file `.env` and relaunch the generation of the report with the command (without redoing the verification):
+```bash
+rust_ev_verifier_console report --input <path_to_json_file>
+```
+
 ## Licence
 
-Open source License Apache 2.0
+rust_ev_verifier_console is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 See [LICENSE](LICENSE)
 
