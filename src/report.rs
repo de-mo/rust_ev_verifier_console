@@ -19,9 +19,8 @@ use chrono::Local;
 use rust_ev_verifier_application_lib::{
     RunInformation,
     report::{
-        PDFReportOptionsBuilder, ReportConfigBuilder, ReportData, ReportInformationTrait,
-        ReportOutputFileOptions, ReportOutputFileOptionsBuilder, ReportOutputFileType,
-        generate_files_from_json,
+        ReportConfigBuilder, ReportData, ReportInformationTrait, ReportOutputDataMetaDataBuilder,
+        ReportOutputFileOptions, generate_files_from_json,
     },
 };
 use rust_ev_verifier_lib::VerifierConfig;
@@ -50,9 +49,12 @@ pub fn generate_report(
         &run_info,
     );
 
+    let seed = run_info.runner_information().seed.as_ref().unwrap();
+
     let filename_without_extension = format!(
-        "e_voting_verifier_report_{}_{}",
+        "e_voting_verifier_report_{}_{}_{}",
         run_info.verification_period().as_ref().unwrap(),
+        seed,
         now.format("%Y%m%d_%H%M%S")
     );
 
@@ -71,11 +73,19 @@ pub fn generate_report(
         json_path.display()
     );
 
-    let options = get_report_file_options(&filename_without_extension, &report_dir_path, config)?;
+    let options = ReportOutputFileOptions::generate_from_config(
+        &filename_without_extension,
+        &report_dir_path,
+        config,
+    )?;
 
     match report_data.generate_files(
-        &report_title,
-        now.format("%d.%m.%Y - %H:%M:%S").to_string().as_str(),
+        ReportOutputDataMetaDataBuilder::default()
+            .title(&report_title)
+            .date_time(now.format("%d.%m.%Y - %H:%M:%S").to_string().as_str())
+            .seed(seed)
+            .build()
+            .context("Error building the report output metadata")?,
         options,
     ) {
         errors if errors.is_empty() => {
@@ -90,67 +100,6 @@ pub fn generate_report(
     Ok(())
 }
 
-fn get_report_file_options(
-    filename_without_extension: &str,
-    output_dir: &Path,
-    config: &VerifierConfig,
-) -> anyhow::Result<ReportOutputFileOptions> {
-    let mut options_builder = ReportOutputFileOptionsBuilder::default()
-        .directory(output_dir)
-        .filename_without_extension(filename_without_extension);
-
-    if config.report_export_txt() {
-        options_builder = options_builder.add_output_type(ReportOutputFileType::Txt);
-    }
-
-    if config.report_export_pdf() {
-        let browser_path = config
-            .pdf_report_browser_path()
-            .context("Error getting the browser path")?;
-        if browser_path.is_none() {
-            anyhow::bail!("Browser path for PDF report generation is not set");
-        } else {
-            options_builder = options_builder.add_output_type(ReportOutputFileType::Pdf);
-            let browser_path = browser_path.unwrap();
-            options_builder = options_builder.pdf_options(
-                PDFReportOptionsBuilder::default()
-                    .path_to_browser(browser_path)
-                    .sandbox(config.report_sandbox())
-                    .build()?,
-            );
-        }
-    }
-    if config.report_export_html() {
-        options_builder = options_builder.add_output_type(ReportOutputFileType::Html);
-    }
-
-    let logo_path = match config.report_logo_path() {
-        Ok(logo_path) => logo_path,
-        Err(e) => {
-            error!("Error getting logo path: {}", e);
-            None
-        }
-    };
-
-    if !logo_path.is_some() {
-        match std::fs::read(&logo_path.unwrap()) {
-            Ok(bytes) => options_builder = options_builder.logo_bytes(bytes),
-            Err(e) => {
-                error!("Error reading logo file: {}", e);
-            }
-        };
-    }
-
-    let electoral_board_members = config.report_electoral_board_members();
-    for member in &electoral_board_members {
-        options_builder = options_builder.add_explicit_electoral_board_member(member);
-    }
-
-    options_builder
-        .build()
-        .context("Error building the options")
-}
-
 /// Execute the report generation from a JSON report file
 #[instrument(skip(config))]
 pub fn execute_report(input: &Path, config: &VerifierConfig) -> anyhow::Result<()> {
@@ -160,7 +109,7 @@ pub fn execute_report(input: &Path, config: &VerifierConfig) -> anyhow::Result<(
 
     let target_dir = config.report_dir_path();
 
-    let options = get_report_file_options(
+    let options = ReportOutputFileOptions::generate_from_config(
         &input.file_stem().unwrap().to_str().unwrap(),
         &target_dir,
         config,
