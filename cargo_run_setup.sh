@@ -1,2 +1,2 @@
 #!/bin/sh
-cargo run setup --context-zip ./datasets/Dataset-context-NE_20231124_TT05-20241016_1513.zip --setup-zip ./datasets/Dataset-setup-NE_20231124_TT05-20241016_1513.zip 
+cargo run setup --context-zip ./datasets/Context_Post_E2E_DEV_2025-08-02.zip

@@ -1,3 +1,19 @@
+// Copyright © 2025 Denis Morel
+//
+// This program is free software: you can redistribute it and/or modify it under
+// the terms of the GNU General Public License as published by the Free
+// Software Foundation, either version 3 of the License, or (at your option) any
+// later version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+// details.
+//
+// You should have received a copy of the GNU General Public License and
+// a copy of the GNU General Public License along with this program. If not, see
+// <https://www.gnu.org/licenses/>.
+
 //! Shell command implementation
 //!
 //! For help:
@@ -6,6 +22,7 @@
 //! ```
 
 mod extract;
+mod report;
 mod subscriber;
 mod verifications;
 
@@ -18,6 +35,8 @@ use structopt::StructOpt;
 use subscriber::init_subscriber;
 use tracing::{error, info, instrument};
 use verifications::execute_verifications;
+
+use crate::report::execute_report;
 
 lazy_static! {
     static ref CONFIG: VerifierConfig = VerifierConfig::new(".");
@@ -64,6 +83,14 @@ pub enum SubCommands {
         /// Only values "context", "setup", "tally" are valid
         dataset_type: String,
     },
+
+    #[structopt()]
+    /// Generate reports from existing json files from previous verifications
+    Report {
+        #[structopt(short, long, parse(from_os_str))]
+        /// The path to the folder containing the json files
+        input: PathBuf,
+    },
 }
 
 /// Main command
@@ -95,6 +122,7 @@ fn execute_command(password: &str) -> anyhow::Result<()> {
             input,
             dataset_type,
         } => execute_extract(&input, password, &dataset_type, &CONFIG),
+        SubCommands::Report { input } => execute_report(&input, &CONFIG),
     }
 }
 
