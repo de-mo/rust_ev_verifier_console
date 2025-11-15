@@ -3,5 +3,5 @@
 /data
 /log
 /temp
-/direct-trust
+/direct-trust_*
 /report
